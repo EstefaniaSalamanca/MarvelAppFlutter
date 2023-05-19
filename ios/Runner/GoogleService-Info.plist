@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1088041884070-8ovn4d5ulc12vvpsha4bu2vfvufqq203.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1088041884070-8ovn4d5ulc12vvpsha4bu2vfvufqq203</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD97Ht_HcwFUv99r3-1wjaLN3M2ihHVOKI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1088041884070</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>es-fanita.marvelapp</string>
+	<key>PROJECT_ID</key>
+	<string>marvelapp-flutter-project</string>
+	<key>STORAGE_BUCKET</key>
+	<string>marvelapp-flutter-project.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1088041884070:ios:9d0560850608265ef9d767</string>
+	<key>DATABASE_URL</key>
+	<string>https://marvelapp-flutter-project-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

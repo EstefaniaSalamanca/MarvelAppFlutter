@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1088041884070",
+    "firebase_url": "https://marvelapp-flutter-project-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "marvelapp-flutter-project",
+    "storage_bucket": "marvelapp-flutter-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088041884070:android:05c9af44fa3aed3af9d767",
+        "android_client_info": {
+          "package_name": "esfanita.marvelapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088041884070-o1b3a4bq52tm3a9dpeo7prrdledmfqnh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU116gc5F22p1D0XmCz1otECD-maEL2pA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088041884070-o1b3a4bq52tm3a9dpeo7prrdledmfqnh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
