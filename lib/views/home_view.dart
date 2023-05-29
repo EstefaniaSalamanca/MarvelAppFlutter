@@ -1,58 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:marvelapp/enums/menu_action.dart';
 import 'package:marvelapp/constants/routes.dart';
+import 'package:marvelapp/models/characters_model.dart';
+import 'package:marvelapp/services/api_services.dart';
 import 'package:marvelapp/services/auth/auth_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-/// Flutter code sample for [BottomNavigationBar].
+Future<Character> fetchCharacter() async {
+  final response = await http.get(Uri.parse(
+      'http://gateway.marvel.com/v1/public/characters?ts=1&apikey=4dc1b141446d7991b4e54a55fc103bf7&hash=710b5b7151872e980d79f983bcb6331d'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Character.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load character');
+  }
+}
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: BottomNavigationBarExample(),
-    );
-  }
-}
-
-class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
+  late Future<Character> futureCharacter;
 
   @override
-  State<BottomNavigationBarExample> createState() =>
-      _BottomNavigationBarExampleState();
-}
-
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Search',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Favorites',
-      style: optionStyle,
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void initState() {
+    super.initState();
+    futureCharacter = fetchCharacter();
   }
 
   @override
@@ -68,9 +51,7 @@ class _BottomNavigationBarExampleState
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
-                    await AuthService.firebase().logOut();
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                    // Lógica para cerrar sesión
                   }
               }
             },
@@ -85,8 +66,54 @@ class _BottomNavigationBarExampleState
           )
         ],
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: FutureBuilder<Character>(
+        future: futureCharacter,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final character = snapshot.data!;
+            final results = character.data.results;
+            // Si el Future tiene datos, muestra el ListView con la respuesta
+            return ListView.builder(
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                final result = results[index];
+                final image =
+                    '${result.thumbnail.path}.${result.thumbnail.extension}';
+                final name = result.name;
+
+                return ListTile(
+                  title: Column(
+                    children: [
+                      Container(
+                        width:
+                            double.infinity, // Ocupa todo el ancho disponible
+                        child: Image.network(
+                          image,
+                          fit: BoxFit.contain, // La imagen no se estira
+                        ),
+                      ),
+                      SizedBox(
+                          height: 8), // Espacio entre la imagen y el nombre
+                      Text(
+                        name,
+                        textAlign: TextAlign.center, // Centra el texto
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            // Si el Future tiene un error, muestra un mensaje de error
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+          // Mientras se está cargando el Future, muestra un indicador de progreso
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -103,13 +130,21 @@ class _BottomNavigationBarExampleState
             label: 'Favorites',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: 0,
         selectedItemColor: Colors.red[700],
         onTap: _onItemTapped,
       ),
     );
   }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      // Implementa la lógica para cambiar de índice
+    });
+  }
 }
+
+enum MenuAction { logout }
 
 Future<bool> showLogOutDialog(BuildContext context) {
   return showDialog<bool>(
@@ -131,7 +166,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
               // Redirige a la vista de inicio de sesión
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                '/login',
+                '/login/',
                 (route) => false,
               );
             },
