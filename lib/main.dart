@@ -5,6 +5,8 @@ import 'package:marvelapp/views/home_view.dart';
 import 'package:marvelapp/views/login_view.dart';
 import 'package:marvelapp/views/register_view.dart';
 import 'package:marvelapp/views/verify_email_view.dart';
+import 'package:marvelapp/views/search_view.dart';
+import 'package:marvelapp/views/favorites_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +22,8 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         homeRoute: (context) => const HomeView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
+        searchRoute: (context) => const SearchView(),
+        favoritesRoute: (context) => const FavoritesView(),
       },
     ),
   );

@@ -1,26 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:marvelapp/enums/menu_action.dart';
 import 'package:marvelapp/constants/routes.dart';
 import 'package:marvelapp/models/characters_model.dart';
 import 'package:marvelapp/services/api_services.dart';
 import 'package:marvelapp/services/auth/auth_service.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-Future<Character> fetchCharacter() async {
-  final response = await http.get(Uri.parse(
-      'http://gateway.marvel.com/v1/public/characters?ts=1&apikey=4dc1b141446d7991b4e54a55fc103bf7&hash=710b5b7151872e980d79f983bcb6331d'));
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return Character.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load character');
-  }
-}
+import 'detail_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -31,11 +15,12 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   late Future<Character> futureCharacter;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    futureCharacter = fetchCharacter();
+    futureCharacter = ApiService().fetchCharacter();
   }
 
   @override
@@ -51,7 +36,10 @@ class _HomeViewState extends State<HomeView> {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
-                    // Lógica para cerrar sesión
+                    await AuthService.firebase().logOut();
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
               }
             },
@@ -66,54 +54,70 @@ class _HomeViewState extends State<HomeView> {
           )
         ],
       ),
-      body: FutureBuilder<Character>(
-        future: futureCharacter,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final character = snapshot.data!;
-            final results = character.data.results;
-            // Si el Future tiene datos, muestra el ListView con la respuesta
-            return ListView.builder(
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                final result = results[index];
-                final image =
-                    '${result.thumbnail.path}.${result.thumbnail.extension}';
-                final name = result.name;
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          FutureBuilder<Character>(
+            future: futureCharacter,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final character = snapshot.data!;
+                final results = character.data.results;
+                // Si el Future tiene datos, muestra el ListView con la respuesta
+                return ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final result = results[index];
+                    final image =
+                        '${result.thumbnail.path}.${result.thumbnail.extension}';
+                    final name = result.name;
 
-                return ListTile(
-                  title: Column(
-                    children: [
-                      Container(
-                        width:
-                            double.infinity, // Ocupa todo el ancho disponible
-                        child: Image.network(
-                          image,
-                          fit: BoxFit.contain, // La imagen no se estira
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CharacterDetailScreen(characterId: result.id),
+                          ),
+                        );
+                      },
+                      child: ListTile(
+                        title: Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: Image.network(
+                                image,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              name,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(
-                          height: 8), // Espacio entre la imagen y el nombre
-                      Text(
-                        name,
-                        textAlign: TextAlign.center, // Centra el texto
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
-              },
-            );
-          } else if (snapshot.hasError) {
-            // Si el Future tiene un error, muestra un mensaje de error
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          // Mientras se está cargando el Future, muestra un indicador de progreso
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+              } else if (snapshot.hasError) {
+                // Si el Future tiene un error, muestra un mensaje de error
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              }
+              // Mientras se está cargando el Future, muestra un indicador de progreso
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.redAccent,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -130,7 +134,7 @@ class _HomeViewState extends State<HomeView> {
             label: 'Favorites',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: _selectedIndex,
         selectedItemColor: Colors.red[700],
         onTap: _onItemTapped,
       ),
@@ -139,7 +143,32 @@ class _HomeViewState extends State<HomeView> {
 
   void _onItemTapped(int index) {
     setState(() {
-      // Implementa la lógica para cambiar de índice
+      switch (index) {
+        case 0:
+          _selectedIndex = 0;
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/home/',
+            (route) => false,
+          );
+          break;
+        case 1:
+          _selectedIndex = 1;
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/search/',
+            (route) => false,
+          );
+          break;
+        case 2:
+          _selectedIndex = 2;
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/favorites/',
+            (route) => false,
+          );
+          break;
+      }
     });
   }
 }
@@ -163,7 +192,6 @@ Future<bool> showLogOutDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true);
-              // Redirige a la vista de inicio de sesión
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/login/',

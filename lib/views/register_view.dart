@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:marvelapp/constants/routes.dart';
-
 import 'package:marvelapp/services/auth/auth_exceptions.dart';
 import 'package:marvelapp/services/auth/auth_service.dart';
 import 'package:marvelapp/utilities/show_error_dialog.dart';
