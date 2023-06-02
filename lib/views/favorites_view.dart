@@ -5,6 +5,7 @@ import 'package:marvelapp/constants/routes.dart';
 import 'package:marvelapp/models/characters_model.dart';
 import 'package:marvelapp/services/api_services.dart';
 import 'package:marvelapp/services/auth/auth_service.dart';
+import 'package:marvelapp/views/character_card_view.dart';
 import 'package:marvelapp/views/detail_view.dart';
 
 class FavoritesView extends StatefulWidget {
@@ -40,6 +41,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
                     await AuthService.firebase().logOut();
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
@@ -87,7 +89,6 @@ class _FavoritesViewState extends State<FavoritesView> {
                       final image =
                           '${results.thumbnail.path}.${results.thumbnail.extension}';
                       final name = results.name;
-                      final description = results.description;
 
                       return GestureDetector(
                         onTap: () {
@@ -99,23 +100,9 @@ class _FavoritesViewState extends State<FavoritesView> {
                             ),
                           );
                         },
-                        child: ListTile(
-                          title: Column(
-                            children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: Image.network(
-                                  image,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                name,
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
+                        child: CharacterCard(
+                          imageUrl: image,
+                          characterName: name,
                         ),
                       );
                     } else if (snapshot.hasError) {
@@ -124,8 +111,8 @@ class _FavoritesViewState extends State<FavoritesView> {
                       );
                     }
 
-                    return ListTile(
-                      title: const CircularProgressIndicator(),
+                    return const ListTile(
+                      title: CircularProgressIndicator(),
                     );
                   },
                 );

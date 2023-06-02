@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:marvelapp/models/characters_model.dart';
-import 'package:marvelapp/constants/api.dart';
 
 class ApiService {
   Future<Character> fetchCharacter() async {

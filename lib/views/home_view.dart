@@ -3,6 +3,7 @@ import 'package:marvelapp/constants/routes.dart';
 import 'package:marvelapp/models/characters_model.dart';
 import 'package:marvelapp/services/api_services.dart';
 import 'package:marvelapp/services/auth/auth_service.dart';
+import 'package:marvelapp/views/character_card_view.dart';
 
 import 'detail_view.dart';
 
@@ -73,34 +74,19 @@ class _HomeViewState extends State<HomeView> {
                     final name = result.name;
 
                     return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CharacterDetailScreen(characterId: result.id),
-                          ),
-                        );
-                      },
-                      child: ListTile(
-                        title: Column(
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: Image.network(
-                                image,
-                                fit: BoxFit.contain,
-                              ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CharacterDetailScreen(characterId: result.id),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              name,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                          );
+                        },
+                        child: CharacterCard(
+                          imageUrl: image,
+                          characterName: name,
+                        ));
                   },
                 );
               } else if (snapshot.hasError) {

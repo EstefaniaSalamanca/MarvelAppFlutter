@@ -13,7 +13,6 @@ class CharacterDetailScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _CharacterDetailScreenState createState() => _CharacterDetailScreenState();
 }
 
@@ -56,72 +55,95 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
               title: const Text('Character Details'),
               backgroundColor: Colors.redAccent[700],
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            body: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Row(
+                Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/marvel_icon.png'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.2),
+                        BlendMode.dstATop,
+                      ),
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  isFavorite = !isFavorite;
+                                  if (isFavorite) {
+                                    // Guardar el elemento como favorito
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(user!.uid)
+                                        .collection('favorites')
+                                        .doc(widget.characterId.toString())
+                                        .set({});
+                                  } else {
+                                    // Eliminar el elemento de favoritos
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(user!.uid)
+                                        .collection('favorites')
+                                        .doc(widget.characterId.toString())
+                                        .delete();
+                                  }
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 16),
+                                child: Icon(
+                                  Icons.favorite,
+                                  size: 30,
+                                  color:
+                                      isFavorite ? Colors.orange : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 300,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            image,
+                            fit: BoxFit.cover,
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          description,
+                          style: const TextStyle(fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
-                            if (isFavorite) {
-                              // Guardar el elemento como favorito
-                              FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user!.uid)
-                                  .collection('favorites')
-                                  .doc(widget.characterId.toString())
-                                  .set({});
-                            } else {
-                              // Eliminar el elemento de favoritos
-                              FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user!.uid)
-                                  .collection('favorites')
-                                  .doc(widget.characterId.toString())
-                                  .delete();
-                            }
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: Icon(
-                            Icons.favorite,
-                            size: 30,
-                            color: isFavorite ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
                     ],
-                  ),
-                ),
-                SizedBox(
-                  height: 300,
-                  child: Image.network(
-                    image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    description,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
                   ),
                 ),
               ],

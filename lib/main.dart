@@ -29,6 +29,19 @@ void main() {
   );
 }
 
+MaterialColor createMaterialColor(Color color) {
+  List<int> strengths = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  final Map<int, Color> swatch = <int, Color>{};
+
+  for (int i = 0; i < strengths.length; i++) {
+    final int shade = strengths[i];
+    final double opacity = 1.0 - (i / strengths.length);
+    swatch[shade] = color.withOpacity(opacity);
+  }
+
+  return MaterialColor(color.value, swatch);
+}
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
