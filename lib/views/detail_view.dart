@@ -4,7 +4,7 @@ import 'package:marvelapp/services/api_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final user = FirebaseAuth.instance.currentUser;
+final User? user = FirebaseAuth.instance.currentUser;
 
 class CharacterDetailScreen extends StatefulWidget {
   final int characterId;
@@ -51,107 +51,115 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
           final name = results.name;
           final description = results.description;
           return Scaffold(
+            backgroundColor: Colors.grey[350],
             appBar: AppBar(
-              title: const Text('Character Details'),
-              backgroundColor: Colors.redAccent[700],
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              title: const Text(''),
+              backgroundColor: Colors.black,
             ),
-            body: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/marvel_icon.png'),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.2),
-                        BlendMode.dstATop,
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isFavorite = !isFavorite;
+                              if (isFavorite) {
+                                // Guardar el elemento como favorito
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user!.uid)
+                                    .collection('favorites')
+                                    .doc(widget.characterId.toString())
+                                    .set({});
+                              } else {
+                                // Eliminar el elemento de favoritos
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user!.uid)
+                                    .collection('favorites')
+                                    .doc(widget.characterId.toString())
+                                    .delete();
+                              }
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: Icon(
+                              Icons.favorite,
+                              size: 30,
+                              color: isFavorite ? Colors.orange : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        image,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                name,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  isFavorite = !isFavorite;
-                                  if (isFavorite) {
-                                    // Guardar el elemento como favorito
-                                    FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(user!.uid)
-                                        .collection('favorites')
-                                        .doc(widget.characterId.toString())
-                                        .set({});
-                                  } else {
-                                    // Eliminar el elemento de favoritos
-                                    FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(user!.uid)
-                                        .collection('favorites')
-                                        .doc(widget.characterId.toString())
-                                        .delete();
-                                  }
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 16),
-                                child: Icon(
-                                  Icons.favorite,
-                                  size: 30,
-                                  color:
-                                      isFavorite ? Colors.orange : Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 300,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            image,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          description,
-                          style: const TextStyle(fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      description.isNotEmpty
+                          ? description
+                          : 'No description available',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
               title: const Text('Character Details'),
             ),
             body: Center(
@@ -161,6 +169,12 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
         }
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
             title: const Text('Character Details'),
           ),
           body: const Center(

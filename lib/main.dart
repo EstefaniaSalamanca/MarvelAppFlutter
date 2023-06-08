@@ -7,6 +7,7 @@ import 'package:marvelapp/views/register_view.dart';
 import 'package:marvelapp/views/verify_email_view.dart';
 import 'package:marvelapp/views/search_view.dart';
 import 'package:marvelapp/views/favorites_view.dart';
+import 'package:marvelapp/views/forgot_password_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,22 +25,10 @@ void main() {
         verifyEmailRoute: (context) => const VerifyEmailView(),
         searchRoute: (context) => const SearchView(),
         favoritesRoute: (context) => const FavoritesView(),
+        forgotPasswordRoute: (context) => const ForgotPasswordView(),
       },
     ),
   );
-}
-
-MaterialColor createMaterialColor(Color color) {
-  List<int> strengths = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-  final Map<int, Color> swatch = <int, Color>{};
-
-  for (int i = 0; i < strengths.length; i++) {
-    final int shade = strengths[i];
-    final double opacity = 1.0 - (i / strengths.length);
-    swatch[shade] = color.withOpacity(opacity);
-  }
-
-  return MaterialColor(color.value, swatch);
 }
 
 class HomePage extends StatelessWidget {

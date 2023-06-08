@@ -30,9 +30,10 @@ class _FavoritesViewState extends State<FavoritesView> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Favorites'),
-        backgroundColor: Colors.redAccent[700],
+        title: const Text(''),
+        backgroundColor: Colors.black,
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
@@ -70,7 +71,12 @@ class _FavoritesViewState extends State<FavoritesView> {
 
             if (favorites.isEmpty) {
               return const Center(
-                child: Text('No favorites yet.'),
+                child: Text(
+                  'No favorites yet.',
+                  style: TextStyle(
+                      color: Colors
+                          .white), // Establecer el color de texto en blanco
+                ),
               );
             }
 
@@ -91,20 +97,19 @@ class _FavoritesViewState extends State<FavoritesView> {
                       final name = results.name;
 
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CharacterDetailScreen(
-                                  characterId: results.id),
-                            ),
-                          );
-                        },
-                        child: CharacterCard(
-                          imageUrl: image,
-                          characterName: name,
-                        ),
-                      );
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CharacterDetailScreen(
+                                    characterId: results.id),
+                              ),
+                            );
+                          },
+                          child: CharacterCard(
+                            imageUrl: image,
+                            characterName: name,
+                          ));
                     } else if (snapshot.hasError) {
                       return ListTile(
                         title: Text('Error: ${snapshot.error}'),

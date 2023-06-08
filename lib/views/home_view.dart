@@ -27,9 +27,10 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: Colors.redAccent[700],
+        title: const Text(''),
+        backgroundColor: Colors.black,
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {

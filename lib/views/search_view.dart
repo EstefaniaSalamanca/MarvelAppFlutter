@@ -32,9 +32,10 @@ class _SearchViewState extends State<SearchView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Search'),
-        backgroundColor: Colors.redAccent[700],
+        title: const Text(''),
+        backgroundColor: Colors.black,
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
@@ -66,7 +67,7 @@ class _SearchViewState extends State<SearchView> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(10.0),
                 border: Border.all(
                   color: Colors.grey,
@@ -152,20 +153,20 @@ class _SearchViewState extends State<SearchView> {
                             final name = result.name;
 
                             return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CharacterDetailScreen(
-                                        characterId: result.id),
-                                  ),
-                                );
-                              },
-                              child: CharacterCard(
-                                imageUrl: image,
-                                characterName: name,
-                              ),
-                            );
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CharacterDetailScreen(
+                                              characterId: result.id),
+                                    ),
+                                  );
+                                },
+                                child: CharacterCard(
+                                  imageUrl: image,
+                                  characterName: name,
+                                ));
                           },
                         );
                       } else {

@@ -5,6 +5,7 @@ import 'package:marvelapp/services/auth/auth_service.dart';
 import 'package:marvelapp/utilities/show_error_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:marvelapp/views/forgot_password_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -33,11 +34,35 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          homeRoute,
+          (route) => false,
+        );
+      } else {}
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.black, // Fondo negro
+        color: Colors.black,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,8 +71,8 @@ class _LoginViewState extends State<LoginView> {
               child: Container(
                 margin: const EdgeInsets.only(top: 25),
                 child: FractionallySizedBox(
-                  widthFactor: 0.6, // Ajusta el ancho según tus necesidades
-                  heightFactor: 0.6, // Ajusta la altura según tus necesidades
+                  widthFactor: 0.6,
+                  heightFactor: 0.6,
                   alignment: Alignment.center,
                   child: Image.asset(
                     'assets/pngwing.com.png',
@@ -56,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
             Container(
-              color: Colors.white, // Fondo blanco
+              color: Colors.white,
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
               child: TextField(
@@ -125,6 +150,12 @@ class _LoginViewState extends State<LoginView> {
             ),
             TextButton(
               onPressed: () {
+                Navigator.of(context).pushNamed(forgotPasswordRoute);
+              },
+              child: const Text('Forgot Password?'),
+            ),
+            TextButton(
+              onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   registerRoute,
                   (route) => false,
@@ -133,31 +164,9 @@ class _LoginViewState extends State<LoginView> {
               child: const Text('Not registered yet? Register here!'),
             ),
             OutlinedButton.icon(
-              onPressed: () async {
-                try {
-                  final GoogleSignInAccount? googleUser =
-                      await _googleSignIn.signIn();
-                  final GoogleSignInAuthentication googleAuth =
-                      await googleUser!.authentication;
-                  final AuthCredential credential =
-                      GoogleAuthProvider.credential(
-                    accessToken: googleAuth.accessToken,
-                    idToken: googleAuth.idToken,
-                  );
-                  final UserCredential userCredential =
-                      await _firebaseAuth.signInWithCredential(credential);
-                  final user = userCredential.user;
-                  if (user != null) {
-                    // El usuario ha iniciado sesión correctamente con Google
-                    // Realiza las acciones necesarias después de iniciar sesión
-                  }
-                } catch (e) {
-                  // Manejar cualquier error que ocurra durante el inicio de sesión con Google
-                  print('Error al iniciar sesión con Google: $e');
-                }
-              },
+              onPressed: _signInWithGoogle,
               icon: Image.asset(
-                'assets/google_logo.png', // Ruta del icono de Google
+                'assets/google_logo.png',
                 width: 24,
                 height: 24,
               ),
