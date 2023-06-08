@@ -155,7 +155,7 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -169,13 +169,13 @@ class _CharacterDetailScreenState extends State<CharacterDetailScreen> {
         }
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: Colors.black,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            title: const Text('Character Details'),
           ),
           body: const Center(
             child: CircularProgressIndicator(),
